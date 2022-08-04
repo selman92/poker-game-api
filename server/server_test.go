@@ -15,8 +15,6 @@ func TestServer_CreateDeck(t *testing.T) {
 
 	req, err := http.NewRequest("GET", "api/create", nil)
 
-	req.URL.Query().Add("shuffled", "true")
-
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,6 +33,22 @@ func TestServer_CreateDeck(t *testing.T) {
 
 	assert.Equal(t, false, deckResponse.Shuffled)
 	assert.Equal(t, 52, deckResponse.Remaining)
+}
+
+func TestServer_CreateDeckFromCards(t *testing.T) {
+	s := NewServer(deck.NewDeckMemoryRepository())
+
+	testCases := []string{
+		"AC,QH,3D",
+		"KS,,,Foo,bar,JH,AS", // invalid values should be ignored
+		"AC,AC,AC,QH,KD",     // duplicate cards should be ignored
+	}
+
+	for _, c := range testCases {
+		createdDeck := DoCreateDeckRequest(*s, c, t)
+
+		assert.Equal(t, 3, createdDeck.Remaining)
+	}
 }
 
 func TestServer_OpenDeckMissingDeckID(t *testing.T) {
@@ -58,7 +72,7 @@ func TestServer_OpenDeckMissingDeckID(t *testing.T) {
 func TestServer_OpenDeck(t *testing.T) {
 	server := NewServer(deck.NewDeckMemoryRepository())
 
-	createdDeck := DoCreateDeckRequest(*server, t)
+	createdDeck := DoCreateDeckRequest(*server, "", t)
 
 	deckId := createdDeck.Id
 
@@ -88,7 +102,7 @@ func TestServer_DrawCardMissingCount(t *testing.T) {
 func TestServer_DrawCard(t *testing.T) {
 	server := NewServer(deck.NewDeckMemoryRepository())
 
-	createdDeck := DoCreateDeckRequest(*server, t)
+	createdDeck := DoCreateDeckRequest(*server, "", t)
 
 	req, err := http.NewRequest("GET", "api/draw", nil)
 
@@ -129,12 +143,18 @@ func AssertStatusCode(expectedCode int, actualCode int, t *testing.T) {
 	}
 }
 
-func DoCreateDeckRequest(server Server, t *testing.T) DeckCreatedResponse {
+func DoCreateDeckRequest(server Server, cards string, t *testing.T) DeckCreatedResponse {
 
 	req, err := http.NewRequest("GET", "api/create", nil)
 
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	if cards != "" {
+		q := req.URL.Query()
+		q.Add("cards", cards)
+		req.URL.RawQuery = q.Encode()
 	}
 
 	rr := httptest.NewRecorder()
