@@ -54,14 +54,14 @@ func (s Server) OpenDeck(w http.ResponseWriter, r *http.Request) {
 	deckId := r.URL.Query().Get("deck_id")
 
 	if deckId == "" {
-		http.Error(w, CreateErrorResponse("Deck ID must be provided."), http.StatusBadRequest)
+		http.Error(w, CreateErrorResponse("The following parameter is required: deck_id"), http.StatusBadRequest)
 		return
 	}
 
 	d, err := s.repository.Get(deckId)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, CreateErrorResponse(err.Error()), http.StatusBadRequest)
 		return
 	}
 
@@ -79,14 +79,14 @@ func (s Server) DrawCards(w http.ResponseWriter, r *http.Request) {
 	deckId := r.URL.Query().Get("deck_id")
 
 	if deckId == "" {
-		http.Error(w, CreateErrorResponse("Deck ID must be provided."), http.StatusBadRequest)
+		http.Error(w, CreateErrorResponse("The following parameter is required: deck_id"), http.StatusBadRequest)
 		return
 	}
 
 	count := r.URL.Query().Get("count")
 
 	if count == "" {
-		http.Error(w, CreateErrorResponse("Count must be provided."), http.StatusBadRequest)
+		http.Error(w, CreateErrorResponse("The following parameter is required: count"), http.StatusBadRequest)
 		return
 	}
 
