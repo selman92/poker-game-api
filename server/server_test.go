@@ -13,7 +13,7 @@ import (
 func TestServer_CreateDeck(t *testing.T) {
 	s := NewServer(deck.NewDeckMemoryRepository())
 
-	req, err := http.NewRequest("GET", "api/create", nil)
+	req, err := http.NewRequest("GET", "api/deck/create", nil)
 
 	if err != nil {
 		t.Fatal(err)
@@ -54,7 +54,7 @@ func TestServer_CreateDeckFromCards(t *testing.T) {
 func TestServer_OpenDeckMissingDeckID(t *testing.T) {
 	s := NewServer(deck.NewDeckMemoryRepository())
 
-	req, err := http.NewRequest("GET", "api/open", nil)
+	req, err := http.NewRequest("GET", "api/deck/open", nil)
 
 	if err != nil {
 		t.Fatal(err)
@@ -145,7 +145,7 @@ func AssertStatusCode(expectedCode int, actualCode int, t *testing.T) {
 
 func DoCreateDeckRequest(server Server, cards string, t *testing.T) DeckCreatedResponse {
 
-	req, err := http.NewRequest("GET", "api/create", nil)
+	req, err := http.NewRequest("GET", "api/deck/create", nil)
 
 	if err != nil {
 		t.Fatal(err)
@@ -174,7 +174,7 @@ func DoCreateDeckRequest(server Server, cards string, t *testing.T) DeckCreatedR
 
 func DoOpenDeckRequest(server Server, deckId string, t *testing.T) deck.IDeck {
 	openRecorder := httptest.NewRecorder()
-	openRequest, openReqErr := http.NewRequest("GET", "api/open", nil)
+	openRequest, openReqErr := http.NewRequest("GET", "api/deck/open", nil)
 
 	q := openRequest.URL.Query()
 	q.Add("deck_id", deckId)

@@ -3,7 +3,12 @@ package server
 import (
 	"PokerGameAPI/domain/deck"
 	"encoding/json"
+	"fmt"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"log"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -23,6 +28,25 @@ type DeckCreatedResponse struct {
 
 type ErrorResponse struct {
 	Error string `json:"error"`
+}
+
+func (s Server) Start() {
+	router := chi.NewRouter()
+
+	AddRoutes(router, s)
+
+	port := os.Getenv("PORT")
+	fmt.Println("Server starting listening on port: " + port)
+
+	log.Fatal(http.ListenAndServe(":"+port, router))
+}
+
+func AddRoutes(router *chi.Mux, s Server) {
+	router.Use(middleware.Logger)
+
+	router.Get("/api/deck/create", s.CreateDeck)
+	router.Get("/api/deck/open", s.OpenDeck)
+	router.Get("/api/draw", s.DrawCards)
 }
 
 func (s Server) CreateDeck(w http.ResponseWriter, r *http.Request) {
@@ -92,7 +116,7 @@ func (s Server) DrawCards(w http.ResponseWriter, r *http.Request) {
 
 	countInt, parseErr := strconv.Atoi(count)
 	if parseErr != nil {
-		http.Error(w, CreateErrorResponse("Count is invalid."), http.StatusBadRequest)
+		http.Error(w, CreateErrorResponse("count is invalid."), http.StatusBadRequest)
 		return
 	}
 
