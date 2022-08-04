@@ -19,6 +19,7 @@ func CreateCardsFromCodes(codes string) []card.Card {
 	parsedCodes := ParseCardCodes(codes)
 
 	cards := make([]card.Card, 0)
+	addedCards := make(map[string]bool)
 
 	for _, c := range parsedCodes {
 		if c == "" {
@@ -28,11 +29,12 @@ func CreateCardsFromCodes(codes string) []card.Card {
 		newCard, err := card.NewCardFromCode(c)
 
 		// Ignore invalid values.
-		if err != nil {
+		if err != nil || addedCards[c] {
 			continue
 		}
 
 		cards = append(cards, *newCard)
+		addedCards[c] = true
 	}
 
 	return cards
