@@ -19,7 +19,7 @@ func TestPokerdeck_CreateShuffledDeck(t *testing.T) {
 	assert.Equal(t, 52, deck.Remaining)
 	assert.Equal(t, true, deck.Shuffled)
 
-	cards, err := deck.DrawCards(1)
+	cards, _, err := deck.DrawCards(1)
 
 	require.NoError(t, err)
 
@@ -27,15 +27,18 @@ func TestPokerdeck_CreateShuffledDeck(t *testing.T) {
 }
 
 func TestPokerdeck_CreateCustomDeck(t *testing.T) {
+
+	c1, _ := card.NewCardFromCode("AS")
+	c2, _ := card.NewCardFromCode("2D")
+	c3, _ := card.NewCardFromCode("KH")
+
 	deck := NewPokerDeck(false, []card.Card{
-		*card.NewCardFromCode("AS"),
-		*card.NewCardFromCode("1D"),
-		*card.NewCardFromCode("KH"),
+		*c1, *c2, *c3,
 	})
 
 	assert.Equal(t, 3, deck.Remaining)
 
-	cards, err := deck.DrawCards(3)
+	cards, _, err := deck.DrawCards(3)
 
 	require.NoError(t, err)
 
@@ -43,9 +46,9 @@ func TestPokerdeck_CreateCustomDeck(t *testing.T) {
 	assert.Equal(t, "SPADES", cards[0].Suite)
 	assert.Equal(t, "A", cards[0].Value)
 
-	assert.Equal(t, "1D", cards[1].Code)
+	assert.Equal(t, "2D", cards[1].Code)
 	assert.Equal(t, "DIAMONDS", cards[1].Suite)
-	assert.Equal(t, "1", cards[1].Value)
+	assert.Equal(t, "2", cards[1].Value)
 
 	assert.Equal(t, "KH", cards[2].Code)
 	assert.Equal(t, "HEARTS", cards[2].Suite)
@@ -57,19 +60,19 @@ func TestPokerDeck_DrawCard(t *testing.T) {
 
 	assert.Equal(t, 52, deck.Remaining)
 
-	deck.DrawCards(4)
+	_, updatedDeck, _ := deck.DrawCards(4)
 
-	assert.Equal(t, 48, deck.Remaining)
+	assert.Equal(t, 48, updatedDeck.GetRemainingCards())
 }
 
 func TestPokerDeck_DrawCardError(t *testing.T) {
-	deck := NewPokerDeck(false, []card.Card{
-		card.NewCardFromCode("AS"),
-	})
+	c, _ := card.NewCardFromCode("AS")
+
+	deck := NewPokerDeck(false, []card.Card{*c})
 
 	assert.Equal(t, 1, deck.Remaining)
 
-	_, err := deck.DrawCards(2)
+	_, _, err := deck.DrawCards(2)
 
 	require.Error(t, err)
 }
