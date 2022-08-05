@@ -57,3 +57,11 @@ The server starts listening on the port 6565 by default. This can be configured 
 ```console
 $ go run app.go
 ```
+
+## Running Tests
+
+Run the following command in the root directory of the project to run all the tests.
+
+```console
+$ go test ./...
+```
