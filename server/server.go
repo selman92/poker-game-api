@@ -46,7 +46,7 @@ func AddRoutes(router *chi.Mux, s Server) {
 
 	router.Get("/api/deck/create", s.CreateDeck)
 	router.Get("/api/deck/open", s.OpenDeck)
-	router.Get("/api/draw", s.DrawCards)
+	router.Get("/api/deck/draw", s.DrawCards)
 }
 
 func (s Server) CreateDeck(w http.ResponseWriter, r *http.Request) {

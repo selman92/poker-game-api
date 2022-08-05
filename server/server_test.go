@@ -84,7 +84,7 @@ func TestServer_OpenDeck(t *testing.T) {
 func TestServer_DrawCardMissingCount(t *testing.T) {
 	server := NewServer(deck.NewDeckMemoryRepository())
 
-	req, err := http.NewRequest("GET", "api/draw", nil)
+	req, err := http.NewRequest("GET", "api/deck/draw", nil)
 
 	if err != nil {
 		t.Fatal(err)
@@ -104,7 +104,7 @@ func TestServer_DrawCard(t *testing.T) {
 
 	createdDeck := DoCreateDeckRequest(*server, "", t)
 
-	req, err := http.NewRequest("GET", "api/draw", nil)
+	req, err := http.NewRequest("GET", "api/deck/draw", nil)
 
 	q := req.URL.Query()
 	q.Add("deck_id", createdDeck.Id)
